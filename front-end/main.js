@@ -387,12 +387,9 @@ class ReportehorizontalComponent {
     this.title = title;
     this.Modo = "";
     this.message = "";
-    // url_1 : string = 'http://localhost:4000/procesar';
-    // url_2 : string = 'http://localhost:4000/procesar2';
-    // url_3 : string = 'http://localhost:4000/procesar3';
-    this.url_1 = 'http://164.92.109.128:4001/procesar';
-    this.url_2 = 'http://164.92.109.128:4001/procesar2';
-    this.url_3 = 'http://164.92.109.128:4001/procesar3';
+    this.url_1 = 'https://backcompensaciones.gestionhq5.com.co/procesar';
+    this.url_2 = 'https://backcompensaciones.gestionhq5.com.co/procesar2';
+    this.url_3 = 'https://backcompensaciones.gestionhq5.com.co/procesar3';
     title.setTitle('Reporte Horizontal');
   }
   post_reporte() {
@@ -676,8 +673,7 @@ class ReportetxtComponent {
     this.formbuilder = formbuilder;
     this.dataservice = dataservice;
     this.title = title;
-    // url_4 : string = 'http://localhost:4000/procesarTXTSS';
-    this.url_4 = 'http://164.92.109.128:4001/procesarTXTSS';
+    this.url_4 = 'https://backcompensaciones.gestionhq5.com.co/procesarTXTSS';
     this.Modo = "";
     this.empresas = [{
       value: "HQ5 S.A.S",
