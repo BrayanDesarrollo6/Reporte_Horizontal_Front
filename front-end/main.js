@@ -413,7 +413,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ReporteLiquidacionesComponent_mat_option_14_Template(rf, ctx) {
   if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](0, "mat-option", 33);
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](0, "mat-option", 34);
     _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtext"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]();
   }
@@ -426,142 +426,160 @@ function ReporteLiquidacionesComponent_mat_option_14_Template(rf, ctx) {
 }
 function ReporteLiquidacionesComponent_mat_option_22_Template(rf, ctx) {
   if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](0, "mat-option", 33);
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](0, "mat-option", 35);
     _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtext"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]();
   }
   if (rf & 2) {
     const estado_r3 = ctx.$implicit;
-    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵproperty"]("value", estado_r3);
+    const ctx_r1 = _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵproperty"]("value", estado_r3)("disabled", ctx_r1.isOpcionDeshabilitada(estado_r3));
     _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵadvance"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtextInterpolate1"](" ", estado_r3, " ");
   }
 }
 class ReporteLiquidacionesComponent {
-  constructor(reportservice, formbuilder, dataservice, title, httpService) {
+  constructor(reportservice, formbuilder, dataservice, title, httpService, elementRef) {
     this.reportservice = reportservice;
     this.formbuilder = formbuilder;
     this.dataservice = dataservice;
     this.title = title;
     this.httpService = httpService;
+    this.elementRef = elementRef;
     this.Modo = "";
     this.message = "";
     this.empresas = [];
     this.estadoslist = [];
     this.disableSelect = new _angular_forms__WEBPACK_IMPORTED_MODULE_4__.FormControl(true);
+    // url_5: string = 'http://localhost:4001/procesarlq';
+    // url_6: string = 'http://localhost:4001/getEmpresas';
     this.url_5 = 'https://backcompensaciones.gestionhq5.com.co/procesarlq';
     this.url_6 = 'https://backcompensaciones.gestionhq5.com.co/getEmpresas';
     title.setTitle('Reporte Liquidaciones');
   }
+  ngOnDestroy() {}
+  isOpcionDeshabilitada(opcion) {
+    const estadosControl = this.formreport.get('estados');
+    const seleccionActual = estadosControl?.value || [];
+    return (seleccionActual.includes('Pendiente') || seleccionActual.includes('Aprobada') || seleccionActual.includes('Enviada a Aprobación')) && (opcion === 'Pagada' || opcion === 'Enviada al banco' || opcion === 'Enviada a Pago' || opcion === 'Enviada a pago sin paz y salvo') || (seleccionActual.includes('Pagada') || seleccionActual.includes('Enviada al banco') || seleccionActual.includes('Enviada a Pago') || seleccionActual.includes('Enviada a pago sin paz y salvo')) && (opcion === 'Pendiente' || opcion === 'Aprobada' || opcion === 'Enviada a Aprobación');
+  }
   updateEmpresas() {
-    console.log("Actualizando empresas");
-    const login = document.getElementById("container_all");
-    const loadinggif = document.getElementById("loading");
-    const alert_message = document.getElementById("alert");
-    if (login != undefined) {
-      login.style.display = "none";
+    const login = document.getElementById('container_all');
+    const loadinggif = document.getElementById('loading');
+    const alert_message = document.getElementById('alert');
+    if (login) {
+      login.style.display = 'none';
     }
-    if (loadinggif != undefined) {
-      loadinggif.style.display = "block";
+    if (loadinggif) {
+      loadinggif.style.display = 'block';
     }
     this.reportservice.post_empresas(this.url_6, {
-      Data: "0"
+      Data: '0'
     }).subscribe(data => {
-      this.RespuestaJson = data;
-      console.log(this.RespuestaJson);
-      if (this.RespuestaJson.process === '0') {
-        this.message = 'El reporte se encuentra vacío, por favor válida la información ingresada.';
-        if (loadinggif != undefined) {
-          loadinggif.style.display = "none";
-        }
-        if (alert_message != undefined) {
-          alert_message.style.display = "block";
-        }
-      } else if (this.RespuestaJson.process === '1') {
-        if (login != undefined) {
-          login.style.display = "block";
-        }
-        if (loadinggif != undefined) {
-          loadinggif.style.display = "none";
-        }
-        this.reportservice.get_empresas(this.url_6).subscribe({
-          next: data => {
-            this.RespuestaJson = data;
-            this.estadoslist = this.RespuestaJson.Estados.sort();
-            this.empresas = this.RespuestaJson.Empresas.sort();
-          },
-          error: error => {
-            console.log(error.message);
-          }
-        });
-      }
+      this.handleUpdateEmpresasResponse(data, login, loadinggif, alert_message);
+    }, error => {
+      console.log(error.message);
     });
   }
-  post_reporte() {
-    const login = document.getElementById("container_all");
-    const loadinggif = document.getElementById("loading");
-    const alert_message = document.getElementById("alert");
-    let a = {
-      Data: this.formreport.value
-    };
-    console.log(a);
-    if (login != undefined) {
-      login.style.display = "none";
-    }
-    if (loadinggif != undefined) {
-      loadinggif.style.display = "block";
-    }
-    this.reportservice.post_lq(this.url_5, {
-      Data: this.formreport.value
-    }).subscribe(data => {
-      this.RespuestaJson = data;
-      if (this.RespuestaJson.process === '1') {
-        this.reportservice.get_txtss(this.url_5).subscribe(data => {
-          if (login != undefined) {
-            login.style.display = "block";
-          }
-          if (loadinggif != undefined) {
-            loadinggif.style.display = "none";
-          }
-          let downloadurl = window.URL.createObjectURL(data);
-          (0,file_saver_es__WEBPACK_IMPORTED_MODULE_0__.saveAs)(downloadurl, this.RespuestaJson.result);
-        });
-      } else {
-        this.message = 'El reporte se encuentra vacío, por favor válida la información ingresada.';
-        if (loadinggif != undefined) {
-          loadinggif.style.display = "none";
-        }
-        if (alert_message != undefined) {
-          alert_message.style.display = "block";
-        }
+  handleUpdateEmpresasResponse(data, login, loadinggif, alert_message) {
+    this.RespuestaJson = data;
+    if (this.RespuestaJson.process === '0') {
+      this.message = 'El reporte se encuentra vacío, por favor valida la información ingresada.';
+      this.hideLoadingAndShowAlert(loadinggif, alert_message);
+    } else if (this.RespuestaJson.process === '1') {
+      if (login) {
+        login.style.display = 'block';
       }
-    });
-  }
-  regresar() {
-    const alert_message = document.getElementById("alert");
-    const login = document.getElementById("container_all");
-    if (alert_message != undefined) {
-      alert_message.style.display = "none";
-    }
-    if (login != undefined) {
-      login.style.display = "block";
+      this.hideLoadingAndShowEmpresas(login, loadinggif, alert_message);
     }
   }
-  ObtenerLocalStorage() {
-    let Mode = localStorage.getItem("Mode");
-    const mode = document.getElementById("login");
-    if (Mode == "dark") {
-      mode?.classList.remove('mode');
-    } else {
-      mode?.classList.add('mode');
+  hideLoadingAndShowAlert(loadinggif, alert_message) {
+    if (loadinggif) {
+      loadinggif.style.display = 'none';
+    }
+    if (alert_message) {
+      alert_message.style.display = 'block';
     }
   }
-  ngOnInit() {
+  hideLoadingAndShowEmpresas(login, loadinggif, alert_message) {
+    if (loadinggif) {
+      loadinggif.style.display = 'none';
+    }
     this.reportservice.get_empresas(this.url_6).subscribe({
       next: data => {
         this.RespuestaJson = data;
         this.estadoslist = this.RespuestaJson.Estados.sort();
         this.empresas = this.RespuestaJson.Empresas.sort();
+      },
+      error: error => {
+        console.log(error.message);
+      }
+    });
+  }
+  post_reporte() {
+    const login = document.getElementById('container_all');
+    const loadinggif = document.getElementById('loading');
+    const alert_message = document.getElementById('alert');
+    if (login) {
+      login.style.display = 'none';
+    }
+    if (loadinggif) {
+      loadinggif.style.display = 'block';
+    }
+    const reportData = {
+      Data: this.formreport.value
+    };
+    console.log(reportData);
+    this.reportservice.post_lq(this.url_5, reportData).subscribe(data => {
+      this.handlePostReporteResponse(data, login, loadinggif, alert_message);
+    }, error => {
+      console.log(error.message);
+    });
+  }
+  handlePostReporteResponse(data, login, loadinggif, alert_message) {
+    this.RespuestaJson = data;
+    if (this.RespuestaJson.process === '1') {
+      this.reportservice.get_lq(this.url_5).subscribe(data => {
+        this.handleDownloadResponse(data, login, loadinggif);
+      });
+    } else {
+      this.message = 'El reporte se encuentra vacío, por favor valida la información ingresada.';
+      this.hideLoadingAndShowAlert(loadinggif, alert_message);
+    }
+  }
+  handleDownloadResponse(data, login, loadinggif) {
+    if (login) {
+      login.style.display = 'block';
+    }
+    if (loadinggif) {
+      loadinggif.style.display = 'none';
+    }
+    const downloadurl = window.URL.createObjectURL(data);
+    (0,file_saver_es__WEBPACK_IMPORTED_MODULE_0__.saveAs)(downloadurl, this.RespuestaJson.result);
+  }
+  regresar() {
+    const alertMessage = document.getElementById('alert');
+    const login = document.getElementById('container_all');
+    if (alertMessage) {
+      alertMessage.style.display = 'none';
+    }
+    if (login) {
+      login.style.display = 'block';
+    }
+  }
+  ObtenerLocalStorage() {
+    const mode = document.getElementById('login');
+    const storedMode = localStorage.getItem('Mode');
+    if (storedMode === 'dark' && mode) {
+      mode.classList.remove('mode');
+    } else if (mode) {
+      mode.classList.add('mode');
+    }
+  }
+  ngOnInit() {
+    this.reportservice.get_empresas(this.url_6).subscribe({
+      next: data => {
+        this.handleGetEmpresasResponse(data);
       },
       error: error => {
         console.log(error.message);
@@ -582,7 +600,7 @@ class ReporteLiquidacionesComponent {
     this.ObtenerLocalStorage();
     this.dataservice.DisparadorModo.subscribe(data => {
       this.Modo = data.data;
-      const mode = document.getElementById("login");
+      const mode = document.getElementById('login');
       if (this.Modo == 'light') {
         mode?.classList.add('mode');
       }
@@ -591,26 +609,33 @@ class ReporteLiquidacionesComponent {
       }
     });
   }
+  handleGetEmpresasResponse(data) {
+    this.RespuestaJson = data;
+    this.estadoslist = this.RespuestaJson.Estados.filter(estado => estado !== 'nan').sort();
+    this.empresas = this.RespuestaJson.Empresas.sort();
+  }
   enable_input_2() {
-    let input_one = this.formreport.get('estados')?.value;
-    if (input_one == "Pendiente" || input_one == "") {
-      this.formreport.get('anio')?.disable();
-      this.formreport.get('mes')?.disable();
-    } else {
+    const selectedOptions = this.formreport.get('estados')?.value || [];
+    const isNotEmpty = selectedOptions.length > 0;
+    const shouldEnable = isNotEmpty && !selectedOptions.includes("Pendiente") && !selectedOptions.includes("Aprobada") && !selectedOptions.includes("Enviada a Aprobación");
+    if (shouldEnable) {
       this.formreport.get('anio')?.enable();
       this.formreport.get('mes')?.enable();
+    } else {
+      this.formreport.get('anio')?.disable();
+      this.formreport.get('mes')?.disable();
     }
   }
 }
 ReporteLiquidacionesComponent.ɵfac = function ReporteLiquidacionesComponent_Factory(t) {
-  return new (t || ReporteLiquidacionesComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdirectiveInject"](src_app_services_report_service__WEBPACK_IMPORTED_MODULE_1__.ReportService), _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdirectiveInject"](_angular_forms__WEBPACK_IMPORTED_MODULE_4__.FormBuilder), _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdirectiveInject"](src_app_services_data_service__WEBPACK_IMPORTED_MODULE_2__.DataService), _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdirectiveInject"](_angular_platform_browser__WEBPACK_IMPORTED_MODULE_5__.Title), _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdirectiveInject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_6__.HttpClient));
+  return new (t || ReporteLiquidacionesComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdirectiveInject"](src_app_services_report_service__WEBPACK_IMPORTED_MODULE_1__.ReportService), _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdirectiveInject"](_angular_forms__WEBPACK_IMPORTED_MODULE_4__.FormBuilder), _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdirectiveInject"](src_app_services_data_service__WEBPACK_IMPORTED_MODULE_2__.DataService), _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdirectiveInject"](_angular_platform_browser__WEBPACK_IMPORTED_MODULE_5__.Title), _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdirectiveInject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_6__.HttpClient), _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_3__.ElementRef));
 };
 ReporteLiquidacionesComponent.ɵcmp = /*@__PURE__*/_angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdefineComponent"]({
   type: ReporteLiquidacionesComponent,
   selectors: [["app-reporte-liquidaciones"]],
   decls: 56,
   vars: 5,
-  consts: [["id", "login"], ["id", "container_all", 1, "container_all"], [1, "login_container"], [1, "login"], [1, "login_box"], [1, "container"], [1, "container-form"], [3, "formGroup", "submit"], [1, "titulo"], ["appearance", "fill", 1, "campo"], ["id", "empresa", "formControlName", "empresa"], [3, "value", 4, "ngFor", "ngForOf"], ["id", "estados", "formControlName", "estados", 3, "ngModelChange"], [1, "campo"], ["matInput", "", "placeholder", "Ingresa un a\u00F1o", "type", "text", "id", "anio", "formControlName", "anio"], ["matInput", "", "placeholder", "Ingresa un mes", "type", "text", "id", "mes", "formControlName", "mes"], [1, "container-button"], ["mat-raised-button", "", "color", "primary", 1, "button", 3, "disabled"], ["type", "button", "mat-raised-button", "", "color", "primary", 1, "button", 3, "click"], ["id", "loading", 1, "loading"], [1, "load"], [1, "containergif"], [1, "message_load"], ["src", "assets\\gif\\loading.gif", "alt", "", 1, "gif"], ["id", "alert", 1, "alert_div"], [1, "alerta"], [1, "image_back"], [1, "containeralert"], [1, "message_alert"], [1, "icon_alert"], [1, "bi", "bi-exclamation-circle"], [1, "message_alerta"], ["mat-raised-button", "", "color", "primary", 1, "boton_alert", 3, "click"], [3, "value"]],
+  consts: [["id", "login"], ["id", "container_all", 1, "container_all"], [1, "login_container"], [1, "login"], [1, "login_box"], [1, "container"], [1, "container-form"], [3, "formGroup", "submit"], [1, "titulo"], ["appearance", "fill", 1, "campo"], ["id", "empresa", "formControlName", "empresa"], [3, "value", 4, "ngFor", "ngForOf"], ["id", "estados", "formControlName", "estados", "multiple", "", 3, "ngModelChange"], [3, "value", "disabled", 4, "ngFor", "ngForOf"], [1, "campo"], ["matInput", "", "placeholder", "Ingresa un a\u00F1o", "type", "text", "id", "anio", "formControlName", "anio"], ["matInput", "", "placeholder", "Ingresa un mes", "type", "text", "id", "mes", "formControlName", "mes"], [1, "container-button"], ["mat-raised-button", "", "color", "primary", 1, "button", 3, "disabled"], ["type", "button", "mat-raised-button", "", "color", "primary", 1, "button", 3, "click"], ["id", "loading", 1, "loading"], [1, "load"], [1, "containergif"], [1, "message_load"], ["src", "assets\\gif\\loading.gif", "alt", "", 1, "gif"], ["id", "alert", 1, "alert_div"], [1, "alerta"], [1, "image_back"], [1, "containeralert"], [1, "message_alert"], [1, "icon_alert"], [1, "bi", "bi-exclamation-circle"], [1, "message_alerta"], ["mat-raised-button", "", "color", "primary", 1, "boton_alert", 3, "click"], [3, "value"], [3, "value", "disabled"]],
   template: function ReporteLiquidacionesComponent_Template(rf, ctx) {
     if (rf & 1) {
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](0, "section", 0)(1, "div", 1)(2, "div", 2)(3, "div", 3)(4, "div", 4)(5, "div", 5)(6, "div", 6)(7, "form", 7);
@@ -633,39 +658,39 @@ ReporteLiquidacionesComponent.ɵcmp = /*@__PURE__*/_angular_core__WEBPACK_IMPORT
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵlistener"]("ngModelChange", function ReporteLiquidacionesComponent_Template_mat_select_ngModelChange_21_listener() {
         return ctx.enable_input_2();
       });
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtemplate"](22, ReporteLiquidacionesComponent_mat_option_22_Template, 2, 2, "mat-option", 11);
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtemplate"](22, ReporteLiquidacionesComponent_mat_option_22_Template, 2, 3, "mat-option", 13);
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]()()();
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](23, "div")(24, "mat-form-field", 13)(25, "mat-label");
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](23, "div")(24, "mat-form-field", 14)(25, "mat-label");
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtext"](26, "A\u00F1o");
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]();
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelement"](27, "input", 14);
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelement"](27, "input", 15);
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]()();
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](28, "div")(29, "mat-form-field", 13)(30, "mat-label");
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](28, "div")(29, "mat-form-field", 14)(30, "mat-label");
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtext"](31, "Mes");
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]();
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelement"](32, "input", 15);
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelement"](32, "input", 16);
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]()();
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](33, "div", 16)(34, "button", 17);
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](33, "div", 17)(34, "button", 18);
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtext"](35, "Procesar");
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]();
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](36, "button", 18);
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](36, "button", 19);
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵlistener"]("click", function ReporteLiquidacionesComponent_Template_button_click_36_listener() {
         return ctx.updateEmpresas();
       });
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtext"](37, "Actualizar");
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]()()()()()()()()();
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](38, "div", 19)(39, "div", 20)(40, "div", 21)(41, "div", 22)(42, "h2");
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](38, "div", 20)(39, "div", 21)(40, "div", 22)(41, "div", 23)(42, "h2");
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtext"](43, "Estamos procesando tu solicitud...");
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]()();
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelement"](44, "img", 23);
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelement"](44, "img", 24);
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]()()();
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](45, "div", 24)(46, "div", 25)(47, "div", 26)(48, "div", 27)(49, "div", 28)(50, "div", 29);
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelement"](51, "i", 30);
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](45, "div", 25)(46, "div", 26)(47, "div", 27)(48, "div", 28)(49, "div", 29)(50, "div", 30);
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelement"](51, "i", 31);
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]();
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](52, "h2", 31);
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](52, "h2", 32);
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtext"](53);
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]();
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](54, "button", 32);
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](54, "button", 33);
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵlistener"]("click", function ReporteLiquidacionesComponent_Template_button_click_54_listener() {
         return ctx.regresar();
       });
@@ -730,7 +755,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function ReporteReLiquidacionesComponent_mat_option_14_Template(rf, ctx) {
   if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](0, "mat-option", 33);
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](0, "mat-option", 34);
     _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtext"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]();
   }
@@ -743,142 +768,160 @@ function ReporteReLiquidacionesComponent_mat_option_14_Template(rf, ctx) {
 }
 function ReporteReLiquidacionesComponent_mat_option_22_Template(rf, ctx) {
   if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](0, "mat-option", 33);
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](0, "mat-option", 35);
     _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtext"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]();
   }
   if (rf & 2) {
     const estado_r3 = ctx.$implicit;
-    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵproperty"]("value", estado_r3);
+    const ctx_r1 = _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵproperty"]("value", estado_r3)("disabled", ctx_r1.isOpcionDeshabilitada(estado_r3));
     _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵadvance"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtextInterpolate1"](" ", estado_r3, " ");
   }
 }
 class ReporteReLiquidacionesComponent {
-  constructor(reportservice, formbuilder, dataservice, title, httpService) {
+  constructor(reportservice, formbuilder, dataservice, title, httpService, elementRef) {
     this.reportservice = reportservice;
     this.formbuilder = formbuilder;
     this.dataservice = dataservice;
     this.title = title;
     this.httpService = httpService;
+    this.elementRef = elementRef;
     this.Modo = "";
     this.message = "";
     this.empresas = [];
     this.estadoslist = [];
     this.disableSelect = new _angular_forms__WEBPACK_IMPORTED_MODULE_4__.FormControl(true);
+    // url_7 : string = 'http://localhost:4001/getEmpresasrelq';
+    // url_8 : string = 'http://localhost:4001/procesarrelq';
     this.url_7 = 'https://backcompensaciones.gestionhq5.com.co/getEmpresasrelq';
     this.url_8 = 'https://backcompensaciones.gestionhq5.com.co/procesarrelq';
-    title.setTitle('Reporte Liquidaciones');
+    title.setTitle('Reporte Reliquidaciones');
+  }
+  ngOnDestroy() {}
+  isOpcionDeshabilitada(opcion) {
+    const estadosControl = this.formreport.get('estados');
+    const seleccionActual = estadosControl?.value || [];
+    return (seleccionActual.includes('Pendiente') || seleccionActual.includes('Aprobada') || seleccionActual.includes('Enviada a Aprobación')) && (opcion === 'Pagada' || opcion === 'Enviada al banco' || opcion === 'Enviada a Pago' || opcion === 'Enviada a pago sin paz y salvo') || (seleccionActual.includes('Pagada') || seleccionActual.includes('Enviada al banco') || seleccionActual.includes('Enviada a Pago') || seleccionActual.includes('Enviada a pago sin paz y salvo')) && (opcion === 'Pendiente' || opcion === 'Aprobada' || opcion === 'Enviada a Aprobación');
   }
   updateEmpresas() {
-    console.log("Actualizando empresas");
-    const login = document.getElementById("container_all");
-    const loadinggif = document.getElementById("loading");
-    const alert_message = document.getElementById("alert");
-    if (login != undefined) {
-      login.style.display = "none";
+    const login = document.getElementById('container_all');
+    const loadinggif = document.getElementById('loading');
+    const alert_message = document.getElementById('alert');
+    if (login) {
+      login.style.display = 'none';
     }
-    if (loadinggif != undefined) {
-      loadinggif.style.display = "block";
+    if (loadinggif) {
+      loadinggif.style.display = 'block';
     }
     this.reportservice.post_empresas(this.url_7, {
-      Data: "1"
+      Data: '0'
     }).subscribe(data => {
-      this.RespuestaJson = data;
-      console.log(this.RespuestaJson);
-      if (this.RespuestaJson.process === '0') {
-        this.message = 'El reporte se encuentra vacío, por favor válida la información ingresada.';
-        if (loadinggif != undefined) {
-          loadinggif.style.display = "none";
-        }
-        if (alert_message != undefined) {
-          alert_message.style.display = "block";
-        }
-      } else if (this.RespuestaJson.process === '1') {
-        if (login != undefined) {
-          login.style.display = "block";
-        }
-        if (loadinggif != undefined) {
-          loadinggif.style.display = "none";
-        }
-        this.reportservice.get_empresas(this.url_7).subscribe({
-          next: data => {
-            this.RespuestaJson = data;
-            this.estadoslist = this.RespuestaJson.Estados.sort();
-            this.empresas = this.RespuestaJson.Empresas.sort();
-          },
-          error: error => {
-            console.log(error.message);
-          }
-        });
-      }
+      this.handleUpdateEmpresasResponse(data, login, loadinggif, alert_message);
+    }, error => {
+      console.log(error.message);
     });
   }
-  post_reporte() {
-    const login = document.getElementById("container_all");
-    const loadinggif = document.getElementById("loading");
-    const alert_message = document.getElementById("alert");
-    let a = {
-      Data: this.formreport.value
-    };
-    console.log(a);
-    if (login != undefined) {
-      login.style.display = "none";
-    }
-    if (loadinggif != undefined) {
-      loadinggif.style.display = "block";
-    }
-    this.reportservice.post_lq(this.url_8, {
-      Data: this.formreport.value
-    }).subscribe(data => {
-      this.RespuestaJson = data;
-      if (this.RespuestaJson.process === '1') {
-        this.reportservice.get_txtss(this.url_8).subscribe(data => {
-          if (login != undefined) {
-            login.style.display = "block";
-          }
-          if (loadinggif != undefined) {
-            loadinggif.style.display = "none";
-          }
-          let downloadurl = window.URL.createObjectURL(data);
-          (0,file_saver_es__WEBPACK_IMPORTED_MODULE_0__.saveAs)(downloadurl, this.RespuestaJson.result);
-        });
-      } else {
-        this.message = 'El reporte se encuentra vacío, por favor válida la información ingresada.';
-        if (loadinggif != undefined) {
-          loadinggif.style.display = "none";
-        }
-        if (alert_message != undefined) {
-          alert_message.style.display = "block";
-        }
+  handleUpdateEmpresasResponse(data, login, loadinggif, alert_message) {
+    this.RespuestaJson = data;
+    if (this.RespuestaJson.process === '0') {
+      this.message = 'El reporte se encuentra vacío, por favor valida la información ingresada.';
+      this.hideLoadingAndShowAlert(loadinggif, alert_message);
+    } else if (this.RespuestaJson.process === '1') {
+      if (login) {
+        login.style.display = 'block';
       }
-    });
-  }
-  regresar() {
-    const alert_message = document.getElementById("alert");
-    const login = document.getElementById("container_all");
-    if (alert_message != undefined) {
-      alert_message.style.display = "none";
-    }
-    if (login != undefined) {
-      login.style.display = "block";
+      this.hideLoadingAndShowEmpresas(login, loadinggif, alert_message);
     }
   }
-  ObtenerLocalStorage() {
-    let Mode = localStorage.getItem("Mode");
-    const mode = document.getElementById("login");
-    if (Mode == "dark") {
-      mode?.classList.remove('mode');
-    } else {
-      mode?.classList.add('mode');
+  hideLoadingAndShowAlert(loadinggif, alert_message) {
+    if (loadinggif) {
+      loadinggif.style.display = 'none';
+    }
+    if (alert_message) {
+      alert_message.style.display = 'block';
     }
   }
-  ngOnInit() {
+  hideLoadingAndShowEmpresas(login, loadinggif, alert_message) {
+    if (loadinggif) {
+      loadinggif.style.display = 'none';
+    }
     this.reportservice.get_empresas(this.url_7).subscribe({
       next: data => {
         this.RespuestaJson = data;
         this.estadoslist = this.RespuestaJson.Estados.sort();
         this.empresas = this.RespuestaJson.Empresas.sort();
+      },
+      error: error => {
+        console.log(error.message);
+      }
+    });
+  }
+  post_reporte() {
+    const login = document.getElementById('container_all');
+    const loadinggif = document.getElementById('loading');
+    const alert_message = document.getElementById('alert');
+    if (login) {
+      login.style.display = 'none';
+    }
+    if (loadinggif) {
+      loadinggif.style.display = 'block';
+    }
+    const reportData = {
+      Data: this.formreport.value
+    };
+    console.log(reportData);
+    this.reportservice.post_lq(this.url_8, reportData).subscribe(data => {
+      this.handlePostReporteResponse(data, login, loadinggif, alert_message);
+    }, error => {
+      console.log(error.message);
+    });
+  }
+  handlePostReporteResponse(data, login, loadinggif, alert_message) {
+    this.RespuestaJson = data;
+    if (this.RespuestaJson.process === '1') {
+      this.reportservice.get_lq(this.url_8).subscribe(data => {
+        this.handleDownloadResponse(data, login, loadinggif);
+      });
+    } else {
+      this.message = 'El reporte se encuentra vacío, por favor valida la información ingresada.';
+      this.hideLoadingAndShowAlert(loadinggif, alert_message);
+    }
+  }
+  handleDownloadResponse(data, login, loadinggif) {
+    if (login) {
+      login.style.display = 'block';
+    }
+    if (loadinggif) {
+      loadinggif.style.display = 'none';
+    }
+    const downloadurl = window.URL.createObjectURL(data);
+    (0,file_saver_es__WEBPACK_IMPORTED_MODULE_0__.saveAs)(downloadurl, this.RespuestaJson.result);
+  }
+  regresar() {
+    const alertMessage = document.getElementById('alert');
+    const login = document.getElementById('container_all');
+    if (alertMessage) {
+      alertMessage.style.display = 'none';
+    }
+    if (login) {
+      login.style.display = 'block';
+    }
+  }
+  ObtenerLocalStorage() {
+    const mode = document.getElementById('login');
+    const storedMode = localStorage.getItem('Mode');
+    if (storedMode === 'dark' && mode) {
+      mode.classList.remove('mode');
+    } else if (mode) {
+      mode.classList.add('mode');
+    }
+  }
+  ngOnInit() {
+    this.reportservice.get_empresas(this.url_7).subscribe({
+      next: data => {
+        this.handleGetEmpresasResponse(data);
       },
       error: error => {
         console.log(error.message);
@@ -899,7 +942,7 @@ class ReporteReLiquidacionesComponent {
     this.ObtenerLocalStorage();
     this.dataservice.DisparadorModo.subscribe(data => {
       this.Modo = data.data;
-      const mode = document.getElementById("login");
+      const mode = document.getElementById('login');
       if (this.Modo == 'light') {
         mode?.classList.add('mode');
       }
@@ -908,26 +951,33 @@ class ReporteReLiquidacionesComponent {
       }
     });
   }
+  handleGetEmpresasResponse(data) {
+    this.RespuestaJson = data;
+    this.estadoslist = this.RespuestaJson.Estados.filter(estado => estado !== 'nan').sort();
+    this.empresas = this.RespuestaJson.Empresas.sort();
+  }
   enable_input_2() {
-    let input_one = this.formreport.get('estados')?.value;
-    if (input_one == "Pendiente" || input_one == "") {
-      this.formreport.get('anio')?.disable();
-      this.formreport.get('mes')?.disable();
-    } else {
+    const selectedOptions = this.formreport.get('estados')?.value || [];
+    const isNotEmpty = selectedOptions.length > 0;
+    const shouldEnable = isNotEmpty && !selectedOptions.includes("Pendiente") && !selectedOptions.includes("Aprobada") && !selectedOptions.includes("Enviada a Aprobación");
+    if (shouldEnable) {
       this.formreport.get('anio')?.enable();
       this.formreport.get('mes')?.enable();
+    } else {
+      this.formreport.get('anio')?.disable();
+      this.formreport.get('mes')?.disable();
     }
   }
 }
 ReporteReLiquidacionesComponent.ɵfac = function ReporteReLiquidacionesComponent_Factory(t) {
-  return new (t || ReporteReLiquidacionesComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdirectiveInject"](src_app_services_report_service__WEBPACK_IMPORTED_MODULE_1__.ReportService), _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdirectiveInject"](_angular_forms__WEBPACK_IMPORTED_MODULE_4__.FormBuilder), _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdirectiveInject"](src_app_services_data_service__WEBPACK_IMPORTED_MODULE_2__.DataService), _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdirectiveInject"](_angular_platform_browser__WEBPACK_IMPORTED_MODULE_5__.Title), _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdirectiveInject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_6__.HttpClient));
+  return new (t || ReporteReLiquidacionesComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdirectiveInject"](src_app_services_report_service__WEBPACK_IMPORTED_MODULE_1__.ReportService), _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdirectiveInject"](_angular_forms__WEBPACK_IMPORTED_MODULE_4__.FormBuilder), _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdirectiveInject"](src_app_services_data_service__WEBPACK_IMPORTED_MODULE_2__.DataService), _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdirectiveInject"](_angular_platform_browser__WEBPACK_IMPORTED_MODULE_5__.Title), _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdirectiveInject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_6__.HttpClient), _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_3__.ElementRef));
 };
 ReporteReLiquidacionesComponent.ɵcmp = /*@__PURE__*/_angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdefineComponent"]({
   type: ReporteReLiquidacionesComponent,
   selectors: [["app-reporte-re-liquidaciones"]],
   decls: 56,
-  vars: 5,
-  consts: [["id", "login"], ["id", "container_all", 1, "container_all"], [1, "login_container"], [1, "login"], [1, "login_box"], [1, "container"], [1, "container-form"], [3, "formGroup", "submit"], [1, "titulo"], ["appearance", "fill", 1, "campo"], ["id", "empresa", "formControlName", "empresa"], [3, "value", 4, "ngFor", "ngForOf"], ["id", "estados", "formControlName", "estados", 3, "ngModelChange"], [1, "campo"], ["matInput", "", "placeholder", "Ingresa un a\u00F1o", "type", "text", "id", "anio", "formControlName", "anio"], ["matInput", "", "placeholder", "Ingresa un mes", "type", "text", "id", "mes", "formControlName", "mes"], [1, "container-button"], ["mat-raised-button", "", "color", "primary", 1, "button", 3, "disabled"], ["type", "button", "mat-raised-button", "", "color", "primary", 1, "button", 3, "click"], ["id", "loading", 1, "loading"], [1, "load"], [1, "containergif"], [1, "message_load"], ["src", "assets\\gif\\loading.gif", "alt", "", 1, "gif"], ["id", "alert", 1, "alert_div"], [1, "alerta"], [1, "image_back"], [1, "containeralert"], [1, "message_alert"], [1, "icon_alert"], [1, "bi", "bi-exclamation-circle"], [1, "message_alerta"], ["mat-raised-button", "", "color", "primary", 1, "boton_alert", 3, "click"], [3, "value"]],
+  vars: 4,
+  consts: [["id", "login"], ["id", "container_all", 1, "container_all"], [1, "login_container"], [1, "login"], [1, "login_box"], [1, "container"], [1, "container-form"], [3, "formGroup", "submit"], [1, "titulo"], ["appearance", "fill", 1, "campo"], ["id", "empresa", "formControlName", "empresa"], [3, "value", 4, "ngFor", "ngForOf"], ["id", "estados", "formControlName", "estados", "multiple", "", 3, "ngModelChange"], [3, "value", "disabled", 4, "ngFor", "ngForOf"], [1, "campo"], ["matInput", "", "placeholder", "Ingresa un a\u00F1o", "type", "text", "id", "anio", "formControlName", "anio"], ["matInput", "", "placeholder", "Ingresa un mes", "type", "text", "id", "mes", "formControlName", "mes"], [1, "container-button"], ["mat-raised-button", "", "color", "primary", "ng-disabled", "formreport.invalid", 1, "button"], ["type", "button", "mat-raised-button", "", "color", "primary", 1, "button", 3, "click"], ["id", "loading", 1, "loading"], [1, "load"], [1, "containergif"], [1, "message_load"], ["src", "assets\\gif\\loading.gif", "alt", "", 1, "gif"], ["id", "alert", 1, "alert_div"], [1, "alerta"], [1, "image_back"], [1, "containeralert"], [1, "message_alert"], [1, "icon_alert"], [1, "bi", "bi-exclamation-circle"], [1, "message_alerta"], ["mat-raised-button", "", "color", "primary", 1, "boton_alert", 3, "click"], [3, "value"], [3, "value", "disabled"]],
   template: function ReporteReLiquidacionesComponent_Template(rf, ctx) {
     if (rf & 1) {
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](0, "section", 0)(1, "div", 1)(2, "div", 2)(3, "div", 3)(4, "div", 4)(5, "div", 5)(6, "div", 6)(7, "form", 7);
@@ -950,39 +1000,39 @@ ReporteReLiquidacionesComponent.ɵcmp = /*@__PURE__*/_angular_core__WEBPACK_IMPO
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵlistener"]("ngModelChange", function ReporteReLiquidacionesComponent_Template_mat_select_ngModelChange_21_listener() {
         return ctx.enable_input_2();
       });
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtemplate"](22, ReporteReLiquidacionesComponent_mat_option_22_Template, 2, 2, "mat-option", 11);
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtemplate"](22, ReporteReLiquidacionesComponent_mat_option_22_Template, 2, 3, "mat-option", 13);
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]()()();
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](23, "div")(24, "mat-form-field", 13)(25, "mat-label");
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](23, "div")(24, "mat-form-field", 14)(25, "mat-label");
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtext"](26, "A\u00F1o");
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]();
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelement"](27, "input", 14);
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelement"](27, "input", 15);
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]()();
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](28, "div")(29, "mat-form-field", 13)(30, "mat-label");
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](28, "div")(29, "mat-form-field", 14)(30, "mat-label");
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtext"](31, "Mes");
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]();
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelement"](32, "input", 15);
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelement"](32, "input", 16);
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]()();
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](33, "div", 16)(34, "button", 17);
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](33, "div", 17)(34, "button", 18);
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtext"](35, "Procesar");
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]();
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](36, "button", 18);
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](36, "button", 19);
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵlistener"]("click", function ReporteReLiquidacionesComponent_Template_button_click_36_listener() {
         return ctx.updateEmpresas();
       });
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtext"](37, "Actualizar");
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]()()()()()()()()();
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](38, "div", 19)(39, "div", 20)(40, "div", 21)(41, "div", 22)(42, "h2");
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](38, "div", 20)(39, "div", 21)(40, "div", 22)(41, "div", 23)(42, "h2");
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtext"](43, "Estamos procesando tu solicitud...");
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]()();
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelement"](44, "img", 23);
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelement"](44, "img", 24);
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]()()();
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](45, "div", 24)(46, "div", 25)(47, "div", 26)(48, "div", 27)(49, "div", 28)(50, "div", 29);
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelement"](51, "i", 30);
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](45, "div", 25)(46, "div", 26)(47, "div", 27)(48, "div", 28)(49, "div", 29)(50, "div", 30);
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelement"](51, "i", 31);
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]();
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](52, "h2", 31);
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](52, "h2", 32);
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtext"](53);
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]();
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](54, "button", 32);
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](54, "button", 33);
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵlistener"]("click", function ReporteReLiquidacionesComponent_Template_button_click_54_listener() {
         return ctx.regresar();
       });
@@ -996,9 +1046,7 @@ ReporteReLiquidacionesComponent.ɵcmp = /*@__PURE__*/_angular_core__WEBPACK_IMPO
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵproperty"]("ngForOf", ctx.empresas);
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵadvance"](8);
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵproperty"]("ngForOf", ctx.estadoslist);
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵadvance"](12);
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵproperty"]("disabled", ctx.formreport.invalid);
-      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵadvance"](19);
+      _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵadvance"](31);
       _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtextInterpolate"](ctx.message);
     }
   },
@@ -1071,6 +1119,12 @@ class ReportehorizontalComponent {
       value: "Clasificar ID proceso",
       viewValue: "Clasificar ID proceso"
     }];
+    // url_1 : string = 'http://localhost:4001/procesar';
+    // url_2 : string = 'http://localhost:4001/procesar2';
+    // url_3 : string = 'http://localhost:4001/procesar3';
+    // url_1 : string = 'http://164.92.109.128:4001/procesar';
+    // url_2 : string = 'http://164.92.109.128:4001/procesar2';
+    // url_3 : string = 'http://164.92.109.128:4001/procesar3';
     this.url_1 = 'https://backcompensaciones.gestionhq5.com.co/procesar';
     this.url_2 = 'https://backcompensaciones.gestionhq5.com.co/procesar2';
     this.url_3 = 'https://backcompensaciones.gestionhq5.com.co/procesar3';
@@ -1390,6 +1444,7 @@ class ReportetxtComponent {
       value: "COOMPHIA SERVICIOS",
       viewValue: "COOMPHIA SERVICIOS"
     }];
+    //url_4 : string = 'http://localhost:4001/procesarTXTSS';
     this.url_4 = 'https://backcompensaciones.gestionhq5.com.co/procesarTXTSS';
     title.setTitle('Reporte TXTSS');
   }
